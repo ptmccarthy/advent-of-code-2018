@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class Day2 {
 
   public static void main(String[] args) throws IOException {
      partOne(fileAsStream("input.txt"));
+     partTwo(fileAsStream("input.txt"));
   }
 
   private static void partOne(Stream<String> input) {
@@ -37,6 +39,42 @@ public class Day2 {
 
     int checksum = twoCount * threeCount;
     System.out.println("Part One: " + checksum);
+  }
+
+  private static void partTwo(Stream<String> input) {
+    String[] inputStrings = input.toArray(String[]::new);
+    int length = inputStrings.length;
+
+    String solution = "";
+
+    for (int i = 0; i < length; i++) {
+      for (int j = 0; j < length; j++) {
+        if (i == j) { continue; }
+
+        ArrayList<Integer> diffIndices = getDiffIndices(inputStrings[i], inputStrings[j]);
+
+        if (diffIndices.size() == 1) {
+          solution = new StringBuilder(inputStrings[i])
+              .deleteCharAt(diffIndices.get(0))
+              .toString();
+          break;
+        }
+      }
+    }
+
+    System.out.println("Part Two: " + solution);
+  }
+
+  private static ArrayList<Integer> getDiffIndices(String one, String two) {
+    ArrayList<Integer> diffIndices = new ArrayList<>();
+
+    for (int i = 0; i < one.length(); i++) {
+      if (one.charAt(i) != two.charAt(i)) {
+        diffIndices.add(i);
+      }
+    }
+
+    return diffIndices;
   }
 
   private static HashMap<Character, Integer> countStringChars(String inputString) {
