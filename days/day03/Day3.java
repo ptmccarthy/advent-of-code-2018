@@ -8,10 +8,10 @@ import java.util.stream.Stream;
 public class Day3 {
 
   public static void main(String[] args) throws IOException {
-    partOne(fileAsStream("input.txt"));
+    solve(fileAsStream("input.txt"));
   }
 
-  private static void partOne(Stream<String> rawClaims) {
+  private static void solve(Stream<String> rawClaims) {
     List<Claim> claims = rawClaims.map(Claim::new).collect(Collectors.toList());
 
     Fabric fabric = new Fabric(1000);
@@ -20,7 +20,14 @@ public class Day3 {
       fabric.processClaim(claim);
     }
 
-    System.out.println("Overlaps: " + fabric.countOverlappingClaims());
+    System.out.println("Part One: Overlaps: " + fabric.countOverlappingClaims());
+
+    for (Claim claim: claims) {
+      if (claim.isClaimUniqueInFabric(fabric)) {
+        System.out.println("Part Two: Unique Claim: " + claim.id);
+        break;
+      }
+    }
   }
 
   private static Stream<String> fileAsStream(String filename) throws IOException {
@@ -29,16 +36,17 @@ public class Day3 {
 }
 
 class Fabric {
-  private final int size;
+  public final int size;
   private final int[][] matrix;
+
 
   Fabric(int sizeSquare) {
     size = sizeSquare;
     matrix = new int[sizeSquare][sizeSquare];
   }
 
-  private void setClaimAt(int x, int y) {
-    matrix[x][y]++;
+  private int setClaimAt(int x, int y) {
+    return matrix[x][y]++;
   }
 
   public int getClaimsAt(int x, int y) {
@@ -87,6 +95,18 @@ class Claim {
 
     width = Integer.parseInt(sizeSplit[0]);
     height = Integer.parseInt(sizeSplit[1]);
+  }
+
+  public boolean isClaimUniqueInFabric(Fabric fabric) {
+    int count = 0;
+
+    for (int i = x; i < (x + width); i++) {
+      for (int j = y; j < (y + height); j++) {
+        count += fabric.getClaimsAt(i, j);
+      }
+    }
+
+    return count == height * width;
   }
 }
 
